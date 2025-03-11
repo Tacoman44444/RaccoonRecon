@@ -15,7 +15,6 @@ public class chickenMovementScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Fence"))
         {
-            Debug.Log("Hit fence");
             moveDirection = -moveDirection;
         }
     }

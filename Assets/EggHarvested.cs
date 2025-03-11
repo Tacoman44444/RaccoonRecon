@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WheatHarvested : MonoBehaviour
+public class EggHarvested : MonoBehaviour
 {
     private void OnEnable()
     {
-        HarvestEventManager.OnWheatHarvest += HarvestWheat;
+        HarvestEventManager.OnEggHarvest += HarvestEgg;
     }
 
-    // Update is called once per frame
     private void OnDisable()
     {
-        HarvestEventManager.OnWheatHarvest -= HarvestWheat;
+        HarvestEventManager.OnEggHarvest -= HarvestEgg;
     }
 
-    void HarvestWheat()
+    void HarvestEgg()
     {
         if (Vector3.Distance(transform.position, FindObjectOfType<PlayerHarvest>().transform.position) < 2.0f)
         {
@@ -23,3 +22,4 @@ public class WheatHarvested : MonoBehaviour
         }
     }
 }
+
