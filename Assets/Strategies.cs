@@ -48,4 +48,12 @@ namespace AI
         }
 
     }
+
+    public class ArousedStrategy : IStrategy
+    {
+        readonly Transform entity;
+        readonly Transform alertCue;
+        readonly float searchSpeed;
+        private float arousedTimer;
+    }
 }

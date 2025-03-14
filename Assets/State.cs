@@ -42,4 +42,13 @@ namespace AI.FiniteStateMachine
             
         }
     }
+
+    public class ArousedState : State
+    {
+
+        public ArousedState(string name, IStrategy strategy) : base(name, strategy)
+        {
+
+        }
+    }
 }
