@@ -6,14 +6,15 @@ TagManager:
   tags:
   - Fence
   - Egg
+  - Raccoon
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Raccoon
   - Water
   - UI
-  - 
+  - Animal
   - 
   - 
   - 

@@ -6,11 +6,11 @@ using UnityEngine.InputSystem;
 public class playerMovementScript : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] private float sneakSpeed = 1.0f;
-    [SerializeField] private float runSpeed = 2.0f;
+    private Rigidbody2D rb;
+    [SerializeField] private float sneakSpeed = 10.0f;
+    [SerializeField] private float runSpeed = 20.0f;
     public InputAction playerControls;
     private Vector2 moveDirection = Vector2.zero;
-    private float speedDampingFactor = 100.0f;
 
     private void OnEnable()
     {
@@ -24,8 +24,7 @@ public class playerMovementScript : MonoBehaviour
 
     void Start()
     {
-        sneakSpeed /= speedDampingFactor;
-        runSpeed /= speedDampingFactor;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -35,11 +34,11 @@ public class playerMovementScript : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            transform.position += new Vector3(moveDirection.x * runSpeed, moveDirection.y * runSpeed, 0.0f);
+            rb.velocity = new Vector3(moveDirection.x * runSpeed, moveDirection.y * runSpeed, 0.0f);
         }
         else
         {
-            transform.position += new Vector3(moveDirection.x * sneakSpeed, moveDirection.y * sneakSpeed, 0.0f);
+            rb.velocity = new Vector3(moveDirection.x * sneakSpeed, moveDirection.y * sneakSpeed, 0.0f);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
 
-public class chickenMovementScript : MonoBehaviour
+public class animalMovementScript : MonoBehaviour
 {
     private Vector2 moveDirection = Vector2.zero;
     private float changeDirectionTime = 5.0f;
@@ -16,6 +16,10 @@ public class chickenMovementScript : MonoBehaviour
         if (collision.gameObject.CompareTag("Fence"))
         {
             moveDirection = -moveDirection;
+        }
+        if (collision.gameObject.CompareTag("Raccoon"))
+        {
+
         }
     }
 
