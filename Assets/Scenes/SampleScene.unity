@@ -278,7 +278,7 @@ Transform:
   m_GameObject: {fileID: 253966545}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.62, y: -1.38, z: 0.3634656}
+  m_LocalPosition: {x: 2.4, y: 4.99, z: 0.3634656}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -372,6 +372,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &318033688
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 318033690}
+  - component: {fileID: 318033689}
+  m_Layer: 0
+  m_Name: GridWorld
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &318033689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318033688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f66e8a6136696514d82fbe48c224b0b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TESTplayer: {fileID: 1203713080}
+  unwalkableMask:
+    serializedVersion: 2
+    m_Bits: 0
+  gridWorldSize: {x: 30, y: 30}
+  nodeRadius: 0.25
+--- !u!4 &318033690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318033688}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &353731962
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,7 +480,7 @@ GameObject:
   - component: {fileID: 447260480}
   - component: {fileID: 447260479}
   - component: {fileID: 447260478}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Fences
   m_TagString: Fence
   m_Icon: {fileID: 0}
@@ -1689,7 +1739,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0.97, y: 0.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5542,7 +5592,7 @@ Transform:
   m_GameObject: {fileID: 1028051151}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.7, y: -2.29, z: 0.3634656}
+  m_LocalPosition: {x: 4.44, y: 9.54, z: 0.3634656}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5613,7 +5663,7 @@ Transform:
   m_GameObject: {fileID: 1163425315}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0.97, y: 0.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5766,7 +5816,7 @@ Transform:
   m_GameObject: {fileID: 1203713077}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.97, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6115,6 +6165,7 @@ GameObject:
   - component: {fileID: 1891881411}
   - component: {fileID: 1891881410}
   - component: {fileID: 1891881412}
+  - component: {fileID: 1891881413}
   m_Layer: 0
   m_Name: enemy
   m_TagString: Untagged
@@ -6183,7 +6234,7 @@ Transform:
   m_GameObject: {fileID: 1891881409}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.84, y: -5.21, z: 0}
+  m_LocalPosition: {x: 0.34, y: 7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6205,7 +6256,29 @@ MonoBehaviour:
   - {fileID: 253966546}
   - {fileID: 1028051152}
   - {fileID: 2130669895}
+  gridWorld: {fileID: 318033689}
   patrolSpeed: 2
+  searchSpeed: 3
+--- !u!114 &1891881413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891881409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94de30722b061804ab8524a37b01b9e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewRadius: 5
+  viewAngle: 90
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &2130669894
 GameObject:
   m_ObjectHideFlags: 0
@@ -6231,7 +6304,7 @@ Transform:
   m_GameObject: {fileID: 2130669894}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.28, y: 2.86, z: 0.3634656}
+  m_LocalPosition: {x: 9.22, y: 7.57, z: 0.3634656}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6488,3 +6561,4 @@ SceneRoots:
   - {fileID: 253966546}
   - {fileID: 1028051152}
   - {fileID: 2130669895}
+  - {fileID: 318033690}
