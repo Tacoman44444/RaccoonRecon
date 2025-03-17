@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -15,8 +16,11 @@ namespace AI.Pathfinding
         }
         public List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
         {
+            Debug.Log("Finding Path");
             Node startNode = gridWorld.NodeFromWorldPoint(startPos);
             Node targetNode = gridWorld.NodeFromWorldPoint(targetPos);
+            gridWorld.TESTplayer = startNode;
+            gridWorld.TESTtarget = targetNode;
 
             List<Node> openSet = new List<Node>();
             HashSet<Node> closedSet = new HashSet<Node>();
@@ -27,9 +31,10 @@ namespace AI.Pathfinding
                 Node currentNode = openSet[0];
                 for (int i = 1; i < openSet.Count; i++)
                 {
-                    if (openSet[i].FCost < currentNode.FCost || openSet[i].FCost == currentNode.FCost && openSet[i].hCost < currentNode.hCost)
+                    if (openSet[i].FCost < currentNode.FCost || openSet[i].FCost == currentNode.FCost)
                     {
-                        currentNode = openSet[i];
+                        if (openSet[i].hCost < currentNode.hCost)
+                            currentNode = openSet[i];
                     }
                 }
 
@@ -62,6 +67,7 @@ namespace AI.Pathfinding
                 }
                 
             }
+            Debug.Log("Fuck. A star didn't work gang");
             return null;
         }
 
@@ -77,12 +83,8 @@ namespace AI.Pathfinding
             }
 
             path.Reverse();
+            gridWorld.path = path;
             return path;
-        }
-
-        private static List<Node> GetNeighbors(Node node, Node[,] grid)
-        {
-            return null;
         }
 
         private int GetDistance(Node a, Node b)

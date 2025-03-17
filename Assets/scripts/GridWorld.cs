@@ -5,11 +5,13 @@ using AI.Pathfinding;
 
 public class GridWorld : MonoBehaviour
 {
-    public Transform TESTplayer;
+    public Node TESTplayer;
+    public Node TESTtarget;
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
     Node[,] grid;
+    public List<Node> path;
 
     float nodeDiameter;
     int gridSizeX;
@@ -21,6 +23,7 @@ public class GridWorld : MonoBehaviour
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
+        path = new List<Node>();
     }
 
     void CreateGrid()
@@ -33,7 +36,7 @@ public class GridWorld : MonoBehaviour
             for (int Y = 0; Y < gridSizeY; Y++)
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (X * nodeDiameter + nodeRadius) + Vector3.up * (Y * nodeDiameter + nodeRadius);
-                bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
+                bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius, unwalkableMask));
                 grid[X, Y] = new Node(walkable, worldPoint, X, Y);
             }
         }
@@ -53,7 +56,7 @@ public class GridWorld : MonoBehaviour
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
 
-                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY && grid[checkX, checkY].walkable)
                 {
                     neighbours.Add(grid[checkX, checkY]);
                 }
@@ -77,22 +80,32 @@ public class GridWorld : MonoBehaviour
         return grid[x, y];
     }
 
+
+    
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
 
         if (grid != null)
         {
-            Node playerNode = NodeFromWorldPoint(TESTplayer.position);
             foreach (Node n in grid)
             { 
                 Gizmos.color = (n.walkable) ? Color.red : Color.green;
-                if (playerNode == n)
+                if (path.Contains(n))
+                {
+                    Gizmos.color = Color.cyan;
+                }
+                if (TESTplayer == n)
                 {
                     Gizmos.color = Color.yellow;
+                }
+                if (TESTtarget == n)
+                {
+                    Gizmos.color = Color.blue;
                 }
                 Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter - 0.1f, nodeDiameter - 0.1f, 0));
             }
         }
     }
+    
 }

@@ -37,20 +37,21 @@ public class EnemyAI : MonoBehaviour
     {
 
         //gridWorld = FindObjectOfType<GridWorld>();
-        pathfinder = new AStar(gridWorld);
         if (patrolPoints.Count == 0)
         {
             Debug.Log("[EnemyAI.cs]: No patrol points defined");
         }
 
-        IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, patrolSpeed);
-        IStrategy arousedStrategy = new ArousedStrategy(transform, transform, pathfinder, patrolSpeed);
+        IStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), patrolSpeed);
+        IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), patrolSpeed);
 
-        State patrolState = new PatrolState("Patrol", patrolStrategy);
         State arousedState = new ArousedState("Aroused", arousedStrategy);
+        State patrolState = new PatrolState("Patrol", patrolStrategy);
+
 
         // patrolState.AddTransition("EnemySpotted", attackState)
         transitionTable.Add(("RaccoonSensed", patrolState), arousedState);
+        transitionTable.Add(("SearchEnded", arousedState), patrolState);
 
         stateMachine = new StateMachine(patrolState, transitionTable);
        
@@ -65,7 +66,17 @@ public class EnemyAI : MonoBehaviour
     void RaccoonSensed(Transform alertCue)
     {
         Debug.Log("Raccoon was sensed"); // code is working upto and including this command
-        stateMachine.ChangeState("RaccoonSensed", new ArousedStrategy(transform, alertCue, pathfinder, searchSpeed));
+        ArousedStrategy arousedStrategy = new ArousedStrategy(transform, alertCue, new AStar(gridWorld), searchSpeed);
+        stateMachine.ChangeState("RaccoonSensed", arousedStrategy);
+        arousedStrategy.onSearchEnded += SearchEnded; 
+        //kind of a shithouse way to do it, because I have to resubscribe SearchEnded() to the current arousedstrategy's onSearchEnabled event. I could
+        //perhaps have a 'timer expired' event happen anytime a state is running for long enough, and then catch it in the transition table as needed.
+
+    }
+
+    void SearchEnded() {
+        Debug.Log("Search Ended");
+        stateMachine.ChangeState("SearchEnded", new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), patrolSpeed));
     }
 
 }

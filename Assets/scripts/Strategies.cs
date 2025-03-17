@@ -1,6 +1,8 @@
 using AI.Pathfinding;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -19,30 +21,56 @@ namespace AI
         readonly List<Transform> patrolPoints;
         readonly float patrolSpeed;
         private AStar pathfinder;
+        private List<Node> path;
+        private int pathIndex = 0;
         private int currentIndex = 0;
-        public PatrolStrategy(Transform entity, List <Transform> patrolPoints, float patrolSpeed) 
+        public PatrolStrategy(Transform entity, List <Transform> patrolPoints, AStar pathfinder, float patrolSpeed) 
         { 
             this.entity = entity;
             this.patrolPoints = patrolPoints;
             this.patrolSpeed = patrolSpeed;
+            this.pathfinder = pathfinder;
+            path = new List<Node>();
+            
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            //Debug.Log("entity position: " + entity.transform.position);
+            //Debug.Log("target position: " + patrolPoints[0].transform.position);
+            path = pathfinder.FindPath(entity.transform.position, patrolPoints[0].transform.position);
+            pathIndex = 0;
         }
 
         public void Process()
         {
-            if (patrolPoints.Count == 0) return;
-
-            if (currentIndex >= patrolPoints.Count)
+            
+            if(path != null && pathIndex < path.Count)
             {
-                currentIndex = 0;
-            }
+                Vector2 targetPos = new Vector2(path[pathIndex].worldPosition.x, path[pathIndex].worldPosition.y);
+                entity.transform.position = Vector2.MoveTowards(entity.transform.position, targetPos, 2f * Time.deltaTime);
 
-            Transform target = patrolPoints[currentIndex];
-            MoveTowards(target);
-
-            if (Vector3.Distance(entity.transform.position, target.transform.position) < 0.5f)
+                if (Vector2.Distance(entity.transform.position, targetPos) < 0.1f)
+                    pathIndex++;
+            } 
+            else
             {
-                currentIndex++;
-            }
+                if (patrolPoints.Count == 0) return;
+
+                if (currentIndex >= patrolPoints.Count)
+                {
+                    currentIndex = 0;
+                }
+
+                Transform target = patrolPoints[currentIndex];
+                MoveTowards(target);
+
+                if (Vector3.Distance(entity.transform.position, target.transform.position) < 0.5f)
+                {
+                    currentIndex++;
+                }
+            } 
         }
 
         private void MoveTowards(Transform target)
@@ -55,13 +83,16 @@ namespace AI
 
     public class ArousedStrategy : IStrategy
     {
+        public event Action onSearchEnded;
+
         readonly Transform entity;
         readonly Transform alertCue;
         private AStar pathfinder;
         private List<Node> path;
         private int pathIndex = 0;
         readonly float searchSpeed = 2.0f;
-        private float arousedTimer = 10.0f;
+        [SerializeField] private float arousedTime = 10.0f;
+        private float timer = 0.0f;
 
         public ArousedStrategy(Transform entity, Transform alertCue, AStar pathfinder, float searchSpeed)
         {
@@ -85,9 +116,19 @@ namespace AI
                 Vector2 targetPos = new Vector2(path[pathIndex].worldPosition.x, path[pathIndex].worldPosition.y);
                 entity.transform.position = Vector2.MoveTowards(entity.transform.position, targetPos, 2f * Time.deltaTime);
 
-                if (Vector2.Distance(entity.transform.position, targetPos) < 0.3f)
+                if (Vector2.Distance(entity.transform.position, targetPos) < 0.1f)
                     pathIndex++;
             }
+            else
+            {
+                timer += Time.deltaTime;
+                if (timer > arousedTime)
+                {
+                    onSearchEnded?.Invoke();
+                }
+            }
         }
+
+
     }
 }
