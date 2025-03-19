@@ -9,10 +9,12 @@ public class EnemyAI : MonoBehaviour
 {
 
     private StateMachine stateMachine;
+    [SerializeField] private Transform player;
     [SerializeField] private List<Transform> patrolPoints;
     [SerializeField] private GridWorld gridWorld;
     [SerializeField] private float patrolSpeed = 2.0f;
     [SerializeField] private float searchSpeed = 3.0f;
+    [SerializeField] private float combatSpeed = 5.0f;
     private Dictionary<(string, State), State> transitionTable = new Dictionary<(string, State), State>();
     private EnemyVisionCone visionCone;
     private AStar pathfinder;
@@ -25,11 +27,13 @@ public class EnemyAI : MonoBehaviour
     private void OnEnable()
     {
         visionCone.OnPlayerSensed += RaccoonSensed;
+        visionCone.OnPlayerSpotted += RaccoonSpotted;
     }
 
     private void OnDisable()
     {
         visionCone.OnPlayerSensed -= RaccoonSensed;
+        visionCone.OnPlayerSpotted -= RaccoonSpotted;
     }
 
     // Start is called before the first frame update
@@ -43,15 +47,20 @@ public class EnemyAI : MonoBehaviour
         }
 
         IStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), patrolSpeed);
-        IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), patrolSpeed);
+        IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), searchSpeed);
+        IStrategy combatStrategy = new CombatStrategy(transform, transform, new AStar(gridWorld), combatSpeed);
 
         State arousedState = new ArousedState("Aroused", arousedStrategy);
         State patrolState = new PatrolState("Patrol", patrolStrategy);
+        State combatState = new CombatState("Combat", combatStrategy);
 
 
         // patrolState.AddTransition("EnemySpotted", attackState)
         transitionTable.Add(("RaccoonSensed", patrolState), arousedState);
         transitionTable.Add(("SearchEnded", arousedState), patrolState);
+        transitionTable.Add(("SoundCue", patrolState), arousedState);
+        transitionTable.Add(("RaccoonSpotted", arousedState), combatState);
+        transitionTable.Add(("CombatEnded", combatState), arousedState);
 
         stateMachine = new StateMachine(patrolState, transitionTable);
        
@@ -77,6 +86,31 @@ public class EnemyAI : MonoBehaviour
     void SearchEnded() {
         Debug.Log("Search Ended");
         stateMachine.ChangeState("SearchEnded", new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), patrolSpeed));
+    }
+
+    void CombatEnded()
+    {
+        Debug.Log("Combat Ended");
+        ArousedStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), searchSpeed);
+        stateMachine.ChangeState("CombatEnded", arousedStrategy);
+        arousedStrategy.onSearchEnded += SearchEnded;
+        
+    }
+
+    public void SoundCue(Transform alertCue)
+    {
+        Debug.Log("Sound cue was heard");
+        ArousedStrategy arousedStrategy = new ArousedStrategy(transform, alertCue, new AStar(gridWorld), searchSpeed);
+        stateMachine.ChangeState("SoundCue", arousedStrategy);
+        arousedStrategy.onSearchEnded += SearchEnded;
+    }
+
+    public void RaccoonSpotted()
+    {
+        Debug.Log("Racoon was spotted");
+        CombatStrategy combatStrategy = new CombatStrategy(transform, player, new AStar(gridWorld), combatSpeed);
+        stateMachine.ChangeState("RaccoonSpotted", combatStrategy);
+        combatStrategy.onCombatEnded += CombatEnded;
     }
 
 }

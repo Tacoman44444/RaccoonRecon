@@ -43,4 +43,13 @@ namespace AI.FiniteStateMachine
 
         }
     }
+
+    public class CombatState : State
+    {
+
+        public CombatState(string name, IStrategy strategy) : base(name, strategy)
+        {
+
+        }
+    }
 }

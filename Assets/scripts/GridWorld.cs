@@ -36,7 +36,7 @@ public class GridWorld : MonoBehaviour
             for (int Y = 0; Y < gridSizeY; Y++)
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (X * nodeDiameter + nodeRadius) + Vector3.up * (Y * nodeDiameter + nodeRadius);
-                bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius, unwalkableMask));
+                bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius - 0.01f, unwalkableMask));
                 grid[X, Y] = new Node(walkable, worldPoint, X, Y);
             }
         }
@@ -81,7 +81,7 @@ public class GridWorld : MonoBehaviour
     }
 
 
-    
+    /*
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
@@ -106,6 +106,6 @@ public class GridWorld : MonoBehaviour
                 Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter - 0.1f, nodeDiameter - 0.1f, 0));
             }
         }
-    }
+    } */
     
 }
