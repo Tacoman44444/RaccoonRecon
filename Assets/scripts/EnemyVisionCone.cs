@@ -14,7 +14,6 @@ public class EnemyVisionCone : MonoBehaviour
     public LayerMask playerMask;
     public LayerMask obstacleMask;
 
-    public bool CanSeePlayer { get; private set; } = false;
     public event Action<Transform> OnPlayerSensed;
     public event Action OnPlayerSpotted;
 

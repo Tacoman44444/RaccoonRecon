@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HelperFunctions
@@ -24,6 +25,11 @@ namespace HelperFunctions
         public static Vector3 GetRandomDirection()
         {
             return new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+        }
+
+        public static Vector3 RotateVectorByAngle(Vector3 vec, float angleDegrees)
+        {
+            return Quaternion.Euler(0, 0, angleDegrees) * vec;
         }
     }
 }

@@ -49,18 +49,23 @@ public class EnemyAI : MonoBehaviour
         IStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), patrolSpeed);
         IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), searchSpeed);
         IStrategy combatStrategy = new CombatStrategy(transform, transform, new AStar(gridWorld), combatSpeed);
+        IStrategy sleepStrategy = new SleepStrategy();
 
         State arousedState = new ArousedState("Aroused", arousedStrategy);
         State patrolState = new PatrolState("Patrol", patrolStrategy);
         State combatState = new CombatState("Combat", combatStrategy);
+        State sleepState = new SleepState("Sleep", sleepStrategy);
 
 
-        // patrolState.AddTransition("EnemySpotted", attackState)
         transitionTable.Add(("RaccoonSensed", patrolState), arousedState);
         transitionTable.Add(("SearchEnded", arousedState), patrolState);
         transitionTable.Add(("SoundCue", patrolState), arousedState);
         transitionTable.Add(("RaccoonSpotted", arousedState), combatState);
         transitionTable.Add(("CombatEnded", combatState), arousedState);
+        transitionTable.Add(("Sleep", patrolState), sleepState);
+        transitionTable.Add(("Sleep", arousedState), sleepState);
+        transitionTable.Add(("Sleep", combatState), sleepState);
+        transitionTable.Add(("SleepEnded", sleepState), arousedState);
 
         stateMachine = new StateMachine(patrolState, transitionTable);
        
@@ -111,6 +116,22 @@ public class EnemyAI : MonoBehaviour
         CombatStrategy combatStrategy = new CombatStrategy(transform, player, new AStar(gridWorld), combatSpeed);
         stateMachine.ChangeState("RaccoonSpotted", combatStrategy);
         combatStrategy.onCombatEnded += CombatEnded;
+    }
+
+    public void Sleep()
+    {
+        Debug.Log("Hit with sleep spray");
+        SleepStrategy sleepStrategy = new SleepStrategy();
+        stateMachine.ChangeState("Sleep", sleepStrategy);
+        sleepStrategy.onSleepEnded += SleepEnded;
+    }
+
+    public void SleepEnded()
+    {
+        Debug.Log("Sleep ended");
+        ArousedStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), searchSpeed);
+        stateMachine.ChangeState("SleepEnded", arousedStrategy);
+        arousedStrategy.onSearchEnded += SearchEnded;
     }
 
 }

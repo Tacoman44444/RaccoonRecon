@@ -52,4 +52,13 @@ namespace AI.FiniteStateMachine
 
         }
     }
+
+    public class SleepState : State
+    {
+
+        public SleepState(string name, IStrategy strategy) : base(name, strategy)
+        {
+
+        }
+    }
 }

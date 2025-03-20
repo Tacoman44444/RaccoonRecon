@@ -228,4 +228,25 @@ namespace AI
             timer = 0.0f; 
         }
     }
+
+    public class SleepStrategy : IStrategy
+    {
+        public event Action onSleepEnded;
+        private readonly float sleepTimer = 10.0f;
+        private float timer = 0.0f;
+
+        public SleepStrategy()
+        {
+
+        }
+
+        public void Process()
+        {
+            timer += Time.deltaTime;
+            if (timer >= sleepTimer)
+            {
+                onSleepEnded?.Invoke();
+            }
+        }
+    }
 }
