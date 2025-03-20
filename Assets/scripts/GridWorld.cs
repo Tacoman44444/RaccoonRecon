@@ -81,11 +81,11 @@ public class GridWorld : MonoBehaviour
     }
 
 
-    /*
+    
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
-
+         /*
         if (grid != null)
         {
             foreach (Node n in grid)
@@ -105,7 +105,7 @@ public class GridWorld : MonoBehaviour
                 }
                 Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter - 0.1f, nodeDiameter - 0.1f, 0));
             }
-        }
-    } */
+        } */
+    }
     
 }

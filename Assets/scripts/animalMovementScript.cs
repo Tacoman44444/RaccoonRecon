@@ -8,7 +8,7 @@ public class animalMovementScript : MonoBehaviour
     private Vector2 moveDirection = Vector2.zero;
     private float changeDirectionTime = 5.0f;
     private float timer = 0.0f;
-    [SerializeField] float speed = 1.0f;
+    [SerializeField] float speed;
     private float speedDampingFactor = 100.0f;
     private void OnCollisionEnter2D(Collision2D collision)
     {
