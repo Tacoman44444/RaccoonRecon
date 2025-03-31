@@ -17,13 +17,18 @@ public class GridWorld : MonoBehaviour
     int gridSizeX;
     int gridSizeY;
 
-    private void Start()
+    private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
         path = new List<Node>();
+    }
+
+    private void Start()
+    {
+        
     }
 
     void CreateGrid()

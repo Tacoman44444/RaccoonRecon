@@ -11,7 +11,6 @@ public class EnemyVisionCone : MonoBehaviour
     public float viewRadius = 5.0f;
     [Range(0, 360)] public float viewAngle = 90.0f;
 
-    public LayerMask playerMask;
     public LayerMask obstacleMask;
 
     public event Action<Transform> OnPlayerSensed;
