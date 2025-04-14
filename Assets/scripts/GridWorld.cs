@@ -90,7 +90,7 @@ public class GridWorld : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
-         /*
+        /*
         if (grid != null)
         {
             foreach (Node n in grid)

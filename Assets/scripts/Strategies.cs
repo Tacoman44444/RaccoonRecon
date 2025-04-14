@@ -26,6 +26,8 @@ namespace AI
         private List<Node> path;
         private int pathIndex = 0;
         private int currentIndex = 0;
+        private float timer = 0.0f;
+        private float lookAroundTimer = 0.8f;
         public PatrolStrategy(Transform entity, List <Transform> patrolPoints, AStar pathfinder, float patrolSpeed) 
         { 
             this.entity = entity;
@@ -50,6 +52,7 @@ namespace AI
             
             if(path != null && pathIndex < path.Count)
             {
+                timer = 0.0f;
                 Vector2 targetPos = new Vector2(path[pathIndex].worldPosition.x, path[pathIndex].worldPosition.y);
                 entity.transform.position = Vector2.MoveTowards(entity.transform.position, targetPos, 2f * Time.deltaTime);
 
@@ -60,23 +63,40 @@ namespace AI
 
                 if (Vector2.Distance(entity.transform.position, targetPos) < 0.1f)
                     pathIndex++;
-            } 
+            }
             else
             {
-                if (patrolPoints.Count == 0) return;
-
-                if (currentIndex >= patrolPoints.Count)
+                if (timer < 4.0f)
                 {
-                    currentIndex = 0;
-                }
+                    timer += Time.deltaTime;
+                    lookAroundTimer -= Time.deltaTime;
+                    if (lookAroundTimer < 0.0f)
+                    {
+                        lookAroundTimer = 0.8f;
+                        Vector2 direction = MyMathUtils.GetRandomDirection();
+                        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                        entity.transform.rotation = Quaternion.Euler(0, 0, angle);
+                    }
 
-                Transform target = patrolPoints[currentIndex];
-                MoveTowards(target);
-
-                if (Vector3.Distance(entity.transform.position, target.transform.position) < 0.5f)
+                } 
+                else
                 {
+                    if (patrolPoints.Count == 0) return;
+
+                    if (currentIndex >= patrolPoints.Count - 1)
+                    {
+                        currentIndex = 0;
+                        path = pathfinder.FindPath(patrolPoints[patrolPoints.Count - 1].transform.position, patrolPoints[0].transform.position);
+                        pathIndex = 0;
+                        return;
+                    }
+
                     currentIndex++;
+                    path = pathfinder.FindPath(patrolPoints[currentIndex - 1].transform.position, patrolPoints[currentIndex].transform.position);
+                    pathIndex = 0;
+                    return;
                 }
+                
             } 
         }
 
