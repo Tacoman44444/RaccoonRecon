@@ -118,6 +118,7 @@ namespace AI
     public class ArousedStrategy : IStrategy
     {
         public event Action onSearchEnded;
+        public event Action onRaccoonSpotted;
 
         readonly Transform entity;
         readonly Transform alertCue;
@@ -128,6 +129,7 @@ namespace AI
         [SerializeField] private float arousedTime = 10.0f;
         private float timer = 0.0f;
         private float lookAroundTimer = 0.0f;
+        private bool searching = false;
 
         public ArousedStrategy(Transform entity, Transform alertCue, AStar pathfinder, float searchSpeed)
         {
@@ -161,6 +163,7 @@ namespace AI
             }
             else
             {
+                searching = true;
                 timer += Time.deltaTime;
                 lookAroundTimer += Time.deltaTime;
                 if (lookAroundTimer > 2.0f)
@@ -177,6 +180,11 @@ namespace AI
             }
         }
 
+        public void RaccoonSpotted(Transform raccoonLoc)
+        {
+            if (searching)
+                onRaccoonSpotted?.Invoke();
+        }
 
     }
 
@@ -192,7 +200,7 @@ namespace AI
         private int pathIndex;
         private float attackSpeed;
         private float aStarTimer = 1.0f;
-        private float combatTimer = 3.0f;
+        private float combatTimer = 7.0f;
         float timer = 0.0f;
 
         public CombatStrategy(Transform entity, Transform player, AStar pathfinder, float attackSpeed)
@@ -209,7 +217,7 @@ namespace AI
             path = pathfinder.FindPath(entity.transform.position, player.transform.position);
             pathIndex = 0;
             visionCone = entity.transform.GetComponent<EnemyVisionCone>();
-            visionCone.OnPlayerSensed += ResetCombatTimer;
+            visionCone.playerUnobstructed += ResetCombatTimer;
         }
 
         public void Process()
@@ -243,7 +251,7 @@ namespace AI
             
         }
 
-        void ResetCombatTimer(Transform transform)
+        void ResetCombatTimer()
         {
             timer = 0.0f; 
         }

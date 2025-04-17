@@ -121,12 +121,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewRadius: 5
   viewAngle: 90
-  playerMask:
-    serializedVersion: 2
-    m_Bits: 0
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   fovPrefab: {fileID: 4013141821595959974, guid: 1952c9e57868bde45a4e1bdb7e371918, type: 3}
 --- !u!114 &856534780378589904
 MonoBehaviour:

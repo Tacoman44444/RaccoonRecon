@@ -8,52 +8,50 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyVisionCone : MonoBehaviour
 {
-    public float viewRadius = 5.0f;
-    [Range(0, 360)] public float viewAngle = 90.0f;
+    public float viewRadius = 4.0f;
+    [Range(0, 360)] public float viewAngle = 120.0f;
 
     public LayerMask obstacleMask;
+    public LayerMask wallMask;
 
-    public event Action<Transform> OnPlayerSensed;
-    public event Action OnPlayerSpotted;
+    public event Action<Transform> playerInVision;
+    public event Action playerUnobstructed;
 
     [SerializeField] private Transform fovPrefab;
     private FieldOfView fieldOfView;
 
     private Transform player;
-    private float spotTimer = 2.0f;
-    private float timer = 0.0f;
-    // Start is called before the first frame update
+
     void Start()
     {
         fieldOfView = Instantiate(fovPrefab, null).GetComponent<FieldOfView>();
         player = GameObject.FindGameObjectWithTag("Raccoon").transform;
     }
 
-    // Update is called once per frame
     void Update()
+    {
+        SetVisionConeParameters();
+        if (CheckPlayerInVision(obstacleMask))
+        {
+            playerInVision?.Invoke(player.transform);
+        }
+        else if (CheckPlayerInVision(wallMask))
+        {
+            playerUnobstructed?.Invoke();
+        }
+    }
+
+    private void SetVisionConeParameters()
     {
         fieldOfView.SetOrigin(transform.position);
         float angle = (transform.eulerAngles.z + 45.0f) * Mathf.Deg2Rad; // Convert to radians
         Vector2 lookDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         fieldOfView.SetDirection(MyMathUtils.GetVectorFromAngle(transform.eulerAngles.z + 45.0f));
         fieldOfView.SetViewDistance(viewRadius);
-
-        if (CheckPlayerInVision())
-        {
-            timer += Time.deltaTime;
-            OnPlayerSensed?.Invoke(player.transform);
-            if (timer > spotTimer)
-            {
-                OnPlayerSpotted?.Invoke();
-            }
-        } 
-        else if (!CheckPlayerInVision())
-        {
-            timer = 0.0f;
-        }
+        fieldOfView.SetFOV(viewAngle);
     }
 
-    private bool CheckPlayerInVision()
+    private bool CheckPlayerInVision(LayerMask obstacleMask)
     {
         if (player == null) return false;
 

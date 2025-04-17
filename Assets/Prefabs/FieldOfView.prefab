@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unwalkableMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
 --- !u!33 &3645757985882630997
 MeshFilter:
   m_ObjectHideFlags: 0

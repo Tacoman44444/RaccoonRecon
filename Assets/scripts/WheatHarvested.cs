@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WheatHarvested : MonoBehaviour
 {
+    public static event Action OnWheatDestroyed;
     private float soundCueRange = 10.0f;
     private void OnEnable()
     {
@@ -28,6 +30,7 @@ public class WheatHarvested : MonoBehaviour
                     enemies[i].SoundCue(transform);
                 }
             }
+            OnWheatDestroyed?.Invoke();
             Destroy(gameObject);
         }
     }

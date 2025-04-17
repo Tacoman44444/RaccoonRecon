@@ -26,14 +26,12 @@ public class EnemyAI : MonoBehaviour
 
     private void OnEnable()
     {
-        visionCone.OnPlayerSensed += RaccoonSensed;
-        visionCone.OnPlayerSpotted += RaccoonSpotted;
+        visionCone.playerInVision += RaccoonSensed;
     }
 
     private void OnDisable()
     {
-        visionCone.OnPlayerSensed -= RaccoonSensed;
-        visionCone.OnPlayerSpotted -= RaccoonSpotted;
+        visionCone.playerInVision -= RaccoonSensed;
     }
 
     // Start is called before the first frame update
@@ -82,7 +80,9 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("Raccoon was sensed"); // code is working upto and including this command
         ArousedStrategy arousedStrategy = new ArousedStrategy(transform, alertCue, new AStar(gridWorld), searchSpeed);
         stateMachine.ChangeState("RaccoonSensed", arousedStrategy);
-        arousedStrategy.onSearchEnded += SearchEnded; 
+        visionCone.playerInVision += arousedStrategy.RaccoonSpotted;
+        arousedStrategy.onSearchEnded += SearchEnded;
+        arousedStrategy.onRaccoonSpotted += RaccoonSpotted;
         //kind of a shithouse way to do it, because I have to resubscribe SearchEnded() to the current arousedstrategy's onSearchEnabled event. I could
         //perhaps have a 'timer expired' event happen anytime a state is running for long enough, and then catch it in the transition table as needed.
 
@@ -123,6 +123,7 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("Hit with sleep spray");
         SleepStrategy sleepStrategy = new SleepStrategy();
         stateMachine.ChangeState("Sleep", sleepStrategy);
+        
         sleepStrategy.onSleepEnded += SleepEnded;
     }
 

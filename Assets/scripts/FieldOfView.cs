@@ -84,4 +84,9 @@ public class FieldOfView : MonoBehaviour
     {
         viewDistance = distance;
     }
+
+    public void SetFOV(float fov)
+    {
+        this.fov = fov;
+    }
 }
