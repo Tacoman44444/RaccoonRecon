@@ -16,7 +16,6 @@ namespace AI.Pathfinding
         }
         public List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
         {
-            Debug.Log("Finding Path");
             Node startNode = gridWorld.NodeFromWorldPoint(startPos);
             Node targetNode = gridWorld.NodeFromWorldPoint(targetPos);
             gridWorld.TESTplayer = startNode;

@@ -5747,7 +5747,7 @@ GameObject:
   - component: {fileID: 572428306}
   m_Layer: 0
   m_Name: Tilemap
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5787,7 +5787,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -49957,6 +49957,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7f2b2771a2b9ce46996c0a130062894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundTilemaps:
+  - {fileID: 572428307}
+  - {fileID: 1384745894}
+  - {fileID: 1469413836}
   sneakSpeed: 3
   runSpeed: 5
   playerControls:

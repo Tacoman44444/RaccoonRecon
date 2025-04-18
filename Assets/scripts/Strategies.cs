@@ -186,6 +186,15 @@ namespace AI
                 onRaccoonSpotted?.Invoke();
         }
 
+        public void UpdatePlayerPosition(Transform playerPos, float radius)
+        {
+            if (Vector3.Distance(playerPos.position, entity.transform.position) <radius)
+            {
+                path = pathfinder.FindPath(entity.transform.position, playerPos.transform.position);
+                pathIndex = 0;
+            }
+        }
+
     }
 
     public class CombatStrategy : IStrategy

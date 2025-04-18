@@ -8,6 +8,7 @@ TagManager:
   - Egg
   - Raccoon
   - Grid
+  - Grass
   layers:
   - Default
   - TransparentFX

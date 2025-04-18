@@ -17,21 +17,25 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float combatSpeed = 5.0f;
     private Dictionary<(string, State), State> transitionTable = new Dictionary<(string, State), State>();
     private EnemyVisionCone visionCone;
+    private playerMovementScript playerMovementScript;
     private AStar pathfinder;
 
     private void Awake()
     {
         visionCone = GetComponent<EnemyVisionCone>();
+        playerMovementScript = player.GetComponent<playerMovementScript>();
     }
 
     private void OnEnable()
     {
         visionCone.playerInVision += RaccoonSensed;
+        playerMovementScript.onPlayerMoved += Footsteps;
     }
 
     private void OnDisable()
     {
         visionCone.playerInVision -= RaccoonSensed;
+        playerMovementScript.onPlayerMoved -= Footsteps;
     }
 
     // Start is called before the first frame update
@@ -58,6 +62,7 @@ public class EnemyAI : MonoBehaviour
         transitionTable.Add(("RaccoonSensed", patrolState), arousedState);
         transitionTable.Add(("SearchEnded", arousedState), patrolState);
         transitionTable.Add(("SoundCue", patrolState), arousedState);
+        transitionTable.Add(("Footsteps", patrolState), arousedState);
         transitionTable.Add(("RaccoonSpotted", arousedState), combatState);
         transitionTable.Add(("CombatEnded", combatState), arousedState);
         transitionTable.Add(("Sleep", patrolState), sleepState);
@@ -108,6 +113,17 @@ public class EnemyAI : MonoBehaviour
         ArousedStrategy arousedStrategy = new ArousedStrategy(transform, alertCue, new AStar(gridWorld), searchSpeed);
         stateMachine.ChangeState("SoundCue", arousedStrategy);
         arousedStrategy.onSearchEnded += SearchEnded;
+    }
+
+    public void Footsteps(Transform playerPos, float radius)
+    {
+        if (Vector3.Distance(playerPos.position, transform.position) < radius)
+        {
+            ArousedStrategy arousedStrategy = new ArousedStrategy(transform, playerPos, new AStar(gridWorld), searchSpeed);
+            stateMachine.ChangeState("Footsteps", arousedStrategy);
+            playerMovementScript.onPlayerMoved += arousedStrategy.UpdatePlayerPosition;
+            arousedStrategy.onSearchEnded += SearchEnded;
+        }
     }
 
     public void RaccoonSpotted()
