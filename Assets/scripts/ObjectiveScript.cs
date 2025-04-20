@@ -39,6 +39,7 @@ public class ObjectiveScript : MonoBehaviour
         inventory.wheat = 0;
         inventory.eggs = 0;
         inventory.milk = 0;
+        inventory.seeds = 0;
 
         wheatGUI.text = "> Wheat: " + objectiveData.wheatCount;
         eggsGUI.text = "> Eggs: " + objectiveData.eggCount;
@@ -53,6 +54,10 @@ public class ObjectiveScript : MonoBehaviour
             {
                 objectiveCanvas.gameObject.SetActive(!objectiveCanvas.gameObject.activeInHierarchy);
             }
+        }
+        else if (Vector3.Distance(homebasePosition, transform.position) > 5.0f)
+        {
+            objectiveCanvas.gameObject.SetActive(false);
         }
     }
 
@@ -71,18 +76,38 @@ public class ObjectiveScript : MonoBehaviour
     public void IncrementWheat()
     {
         inventory.wheat++;
-        Debug.Log("wheat in inventory: " + inventory.wheat);
+    }
+
+    public bool DecreaseWheat(int num)
+    {
+        if (inventory.wheat >= num)
+        {
+            inventory.wheat -= num;
+            return true;
+        }
+        else
+        {
+            Debug.Log("Not enough!");
+            return false;
+        }
     }
 
     public void IncrementEgg()
     {
         inventory.eggs++;
-        Debug.Log("eggs in inventory: " + inventory.eggs);
     }
 
     public void IncrementMilk()
     {
         inventory.milk++;
+    }
+
+    public void AddSeeds(int num)
+    {
+        if (inventory.seeds <= 100)
+        {
+            inventory.seeds += num;
+        }
     }
 
 }

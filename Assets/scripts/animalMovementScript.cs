@@ -10,6 +10,7 @@ public class animalMovementScript : MonoBehaviour
     private float timer = 0.0f;
     [SerializeField] float speed;
     private float speedDampingFactor = 100.0f;
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
@@ -26,6 +27,7 @@ public class animalMovementScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         speed /= speedDampingFactor;
         ChangeDirection();
     }
@@ -40,6 +42,7 @@ public class animalMovementScript : MonoBehaviour
             timer = 0.0f;
             ChangeDirection();
         }
+        
 
     }
 
@@ -55,4 +58,6 @@ public class animalMovementScript : MonoBehaviour
         }
         
     }
+
+
 }

@@ -25,4 +25,5 @@ public struct Inventory
     public int wheat;
     public int eggs;
     public int milk;
+    public int seeds;
 }

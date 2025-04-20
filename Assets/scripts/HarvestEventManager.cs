@@ -7,6 +7,7 @@ public class HarvestEventManager : MonoBehaviour
 {
     public static event Action OnWheatHarvest;
     public static event Action OnEggHarvest;
+    public static event Action<int> OnMilkHarvest;
 
     public static void WheatHarvest()
     {

@@ -9,6 +9,7 @@ TagManager:
   - Raccoon
   - Grid
   - Grass
+  - CowBounds
   layers:
   - Default
   - TransparentFX
