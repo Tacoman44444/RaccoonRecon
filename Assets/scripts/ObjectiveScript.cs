@@ -78,6 +78,11 @@ public class ObjectiveScript : MonoBehaviour
         inventory.wheat++;
     }
 
+    public void IncrementWheat(Vector3Int vec)
+    {
+        inventory.wheat++;
+    }
+
     public bool DecreaseWheat(int num)
     {
         if (inventory.wheat >= num)

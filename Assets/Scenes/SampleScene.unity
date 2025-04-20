@@ -49134,6 +49134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wheatCropMap: {fileID: 1469413836}
   wheatPrefab: {fileID: 1946144717454276727, guid: 72bf97a2a64de4b4fb45d0041dbe63f6, type: 3}
+  seedPrefab: {fileID: 1454008884062873998, guid: bb202d9d80557e744b01285a6cb8c977, type: 3}
+  player: {fileID: 1203713080}
 --- !u!4 &945912460
 Transform:
   m_ObjectHideFlags: 0

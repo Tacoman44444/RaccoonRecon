@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class WheatHarvested : MonoBehaviour
 {
-    public static event Action OnWheatDestroyed;
+    public static event Action<Vector3Int> OnWheatDestroyed;
     private float soundCueRange = 10.0f;
     private void OnEnable()
     {
@@ -30,7 +30,7 @@ public class WheatHarvested : MonoBehaviour
                     enemies[i].SoundCue(transform);
                 }
             }
-            OnWheatDestroyed?.Invoke();
+            OnWheatDestroyed?.Invoke(new Vector3Int(Convert.ToInt32(transform.position.x - 0.5f), Convert.ToInt32(transform.position.y - 0.5f), 0));
             Destroy(gameObject);
         }
     }
