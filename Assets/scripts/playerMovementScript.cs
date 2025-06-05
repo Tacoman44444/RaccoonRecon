@@ -20,6 +20,22 @@ public class playerMovementScript : MonoBehaviour
     private Vector2 moveDirection = Vector2.zero;
     private float checkTileTimer = 0.5f;
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        Color c = sr.color;
+        c.a = 0.5f;
+        sr.color = c;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        Color c = sr.color;
+        c.a = 1.0f;
+        sr.color = c;
+    }
+
     private void OnEnable()
     {
         playerControls.Enable();
@@ -69,6 +85,7 @@ public class playerMovementScript : MonoBehaviour
                     {
                         onPlayerMoved?.Invoke(transform, groundSoundMultipliers[groundTile.tag]);
                         Debug.Log("Invoked player moved");
+
                     }
                 }
                 checkTileTimer = 0.0f;

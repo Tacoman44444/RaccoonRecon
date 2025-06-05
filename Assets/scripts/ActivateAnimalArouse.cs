@@ -14,7 +14,7 @@ public class ActivateAnimalArouse : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && AbilityManager.activeAbility == Abilities.ANIMAL_AROUSE)
         {
             EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
             for (int i = 0; i < enemies.Length; i++)

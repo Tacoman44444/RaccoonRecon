@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,8 @@ public class CowProduce : MonoBehaviour
     private float timer = 0.0f;
     private ObjectiveScript objectiveScript;
 
+    public static event Action OnCowHarvest;
+
     private void Start()
     {
         objectiveScript = player.GetComponent<ObjectiveScript>();
@@ -37,7 +40,8 @@ public class CowProduce : MonoBehaviour
                 }
                 if (state == CowState.COW_READYTOMILK)
                 {
-                    objectiveScript.IncrementMilk();
+                    //objectiveScript.IncrementMilk();
+                    OnCowHarvest?.Invoke();
                     state = CowState.COW_UNFED;
                 }
             }

@@ -16,6 +16,7 @@ public class InitializeWheatCrop : MonoBehaviour
     [SerializeField] private GameObject wheatPrefab;
     [SerializeField] private GameObject seedPrefab;
     [SerializeField] private Transform player;
+    private ObjectiveScript objectiveScript;
 
     // List<DirtTileData> dirtTiles = new List<DirtTileData>();
     private Dictionary<Vector3Int, bool> dirtTiles = new Dictionary<Vector3Int, bool>();
@@ -33,6 +34,7 @@ public class InitializeWheatCrop : MonoBehaviour
 
     void Start()
     {
+        objectiveScript = player.GetComponent<ObjectiveScript>();
         dirtTiles = GetAllTiles(wheatCropMap);
         foreach (Vector3Int tilePos in dirtTiles.Keys.ToList())
         {
@@ -54,8 +56,11 @@ public class InitializeWheatCrop : MonoBehaviour
             {
                 if (Vector3.Distance(tilePos, player.transform.position) < 2.0f && !dirtTiles[tilePos])
                 {
-                    Instantiate(seedPrefab, new Vector3((float)(tilePos.x + 0.5f), (float)(tilePos.y + 0.5f), 0), Quaternion.identity);
-                    dirtTiles[tilePos] = true;
+                    if (objectiveScript.DecrementSeeds())
+                    {
+                        Instantiate(seedPrefab, new Vector3((float)(tilePos.x + 0.5f), (float)(tilePos.y + 0.5f), 0), Quaternion.identity);
+                        dirtTiles[tilePos] = true;
+                    }
                 }
             }
         }

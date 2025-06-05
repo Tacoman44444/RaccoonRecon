@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlantAnimalArouse : MonoBehaviour
 {
     [SerializeField] private GameObject animalArousePrefab;
+    private static int instances = 3;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,9 +15,10 @@ public class PlantAnimalArouse : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetMouseButtonDown(0) && AbilityManager.activeAbility == Abilities.ANIMAL_AROUSE && instances > 0)
         {
             Instantiate(animalArousePrefab, transform.position, Quaternion.identity);
+            instances--;
         }
     }
 }

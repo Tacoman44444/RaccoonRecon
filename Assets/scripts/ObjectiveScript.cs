@@ -7,9 +7,16 @@ public class ObjectiveScript : MonoBehaviour
 {
     [SerializeField] private ObjectiveData objectiveData;
 
-    [SerializeField] private TextMeshProUGUI wheatGUI;
-    [SerializeField] private TextMeshProUGUI eggsGUI;
-    [SerializeField] private TextMeshProUGUI milkGUI;
+    [SerializeField] private TextMeshProUGUI maxWheatGUI;
+    [SerializeField] private TextMeshProUGUI maxEggsGUI;
+    [SerializeField] private TextMeshProUGUI maxMilkGUI;
+
+
+    [SerializeField] private TextMeshProUGUI wheatCount;
+    [SerializeField] private TextMeshProUGUI eggsCount;
+    [SerializeField] private TextMeshProUGUI milkCount;
+    [SerializeField] private TextMeshProUGUI seedsCount;
+
 
     [SerializeField] Canvas objectiveCanvas;
     [SerializeField] private GameObject homebase;
@@ -23,12 +30,14 @@ public class ObjectiveScript : MonoBehaviour
     {
         WheatHarvested.OnWheatDestroyed += IncrementWheat;
         HarvestEventManager.OnEggHarvest += IncrementEgg;
+        CowProduce.OnCowHarvest += IncrementMilk;
     }
 
     private void OnDisable()
     {
         WheatHarvested.OnWheatDestroyed -= IncrementWheat;
         HarvestEventManager.OnEggHarvest -= IncrementEgg;
+        CowProduce.OnCowHarvest -= IncrementMilk;
     }
 
     void Start()
@@ -41,9 +50,9 @@ public class ObjectiveScript : MonoBehaviour
         inventory.milk = 0;
         inventory.seeds = 0;
 
-        wheatGUI.text = "> Wheat: " + objectiveData.wheatCount;
-        eggsGUI.text = "> Eggs: " + objectiveData.eggCount;
-        milkGUI.text = "> Milk: " + objectiveData.milkCount;
+        maxWheatGUI.text = "> Wheat: " + objectiveData.wheatCount;
+        maxEggsGUI.text = "> Eggs: " + objectiveData.eggCount;
+        maxMilkGUI.text = "> Milk: " + objectiveData.milkCount;
     }
 
     void Update()
@@ -76,11 +85,13 @@ public class ObjectiveScript : MonoBehaviour
     public void IncrementWheat()
     {
         inventory.wheat++;
+        wheatCount.text = inventory.wheat.ToString();
     }
 
     public void IncrementWheat(Vector3Int vec)
     {
         inventory.wheat++;
+        wheatCount.text = inventory.wheat.ToString();
     }
 
     public bool DecreaseWheat(int num)
@@ -88,6 +99,7 @@ public class ObjectiveScript : MonoBehaviour
         if (inventory.wheat >= num)
         {
             inventory.wheat -= num;
+            wheatCount.text = inventory.wheat.ToString();
             return true;
         }
         else
@@ -95,16 +107,34 @@ public class ObjectiveScript : MonoBehaviour
             Debug.Log("Not enough!");
             return false;
         }
+        
+    }
+
+    public bool DecrementSeeds()
+    {
+        if (inventory.seeds > 0)
+        {
+            inventory.seeds--;
+            seedsCount.text = inventory.seeds.ToString();
+            return true;
+        }
+        else
+        {
+            Debug.Log("Not enough seeds to plant more wheat");
+            return false;
+        }
     }
 
     public void IncrementEgg()
     {
         inventory.eggs++;
+        eggsCount.text = inventory.eggs.ToString();
     }
 
     public void IncrementMilk()
     {
         inventory.milk++;
+        milkCount.text = inventory.milk.ToString();
     }
 
     public void AddSeeds(int num)
@@ -112,6 +142,7 @@ public class ObjectiveScript : MonoBehaviour
         if (inventory.seeds <= 100)
         {
             inventory.seeds += num;
+            seedsCount.text = inventory.seeds.ToString();
         }
     }
 

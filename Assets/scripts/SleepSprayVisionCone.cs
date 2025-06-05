@@ -18,7 +18,6 @@ public class SleepSprayVisionCone : MonoBehaviour
     {
         enemies = FindObjectsOfType<EnemyAI>();
         fieldOfView = Instantiate(fovPrefab, null).GetComponent<FieldOfView>();
-        
     }
 
     // Update is called once per frame
@@ -30,7 +29,7 @@ public class SleepSprayVisionCone : MonoBehaviour
         fieldOfView.SetOrigin(transform.position);
         fieldOfView.SetDirection(MyMathUtils.RotateVectorByAngle(mousePosition - transform.position, viewAngle / 2));
         fieldOfView.SetViewDistance(viewRadius);
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && AbilityManager.activeAbility == Abilities.SLEEP_SPRAY)
         {
             foreach (EnemyAI enemyInVision in CheckEnemiesInVision(mousePosition))
             {
