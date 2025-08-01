@@ -5,13 +5,11 @@ using AI.Pathfinding;
 
 public class GridWorld : MonoBehaviour
 {
-    public Node TESTplayer;
-    public Node TESTtarget;
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
-    Node[,] grid;
-    public List<Node> path;
+    Tile[,] grid;
+    public List<Tile> path;
 
     float nodeDiameter;
     int gridSizeX;
@@ -23,7 +21,7 @@ public class GridWorld : MonoBehaviour
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
-        path = new List<Node>();
+        path = new List<Tile>();
     }
 
     private void Start()
@@ -33,7 +31,7 @@ public class GridWorld : MonoBehaviour
 
     void CreateGrid()
     {
-        grid = new Node[gridSizeX, gridSizeY]; 
+        grid = new Tile[gridSizeX, gridSizeY]; 
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
 
         for (int X = 0; X < gridSizeX; X++)
@@ -42,14 +40,14 @@ public class GridWorld : MonoBehaviour
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (X * nodeDiameter + nodeRadius) + Vector3.up * (Y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius - 0.01f, unwalkableMask));
-                grid[X, Y] = new Node(walkable, worldPoint, X, Y);
+                grid[X, Y] = new Tile(walkable, worldPoint, X, Y);
             }
         }
     }
 
-    public List<Node> GetNeighbours(Node node)
+    public List<Tile> GetNeighbours(Tile node)
     {
-        List<Node> neighbours = new List<Node>();
+        List<Tile> neighbours = new List<Tile>();
 
         for (int x = -1; x <= 1; x++)
         {
@@ -72,7 +70,7 @@ public class GridWorld : MonoBehaviour
 
     }
 
-    public Node NodeFromWorldPoint(Vector3 worldPosition)
+    public Tile NodeFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
         float percentY = (worldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;

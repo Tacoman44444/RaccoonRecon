@@ -8,7 +8,7 @@ using AI.Pathfinding;
 public class EnemyAI : MonoBehaviour
 {
 
-    private StateMachine stateMachine;
+    private GuardStateMachine stateMachine;
     [SerializeField] private Transform player;
     [SerializeField] private List<Transform> patrolPoints;
     [SerializeField] private GridWorld gridWorld;
@@ -48,10 +48,10 @@ public class EnemyAI : MonoBehaviour
             Debug.Log("[EnemyAI.cs]: No patrol points defined");
         }
 
-        IStrategy arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), patrolSpeed);
-        IStrategy patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), searchSpeed);
-        IStrategy combatStrategy = new CombatStrategy(transform, transform, new AStar(gridWorld), combatSpeed);
-        IStrategy sleepStrategy = new SleepStrategy();
+        IGuardStrategies arousedStrategy = new ArousedStrategy(transform, transform, new AStar(gridWorld), patrolSpeed);
+        IGuardStrategies patrolStrategy = new PatrolStrategy(transform, patrolPoints, new AStar(gridWorld), searchSpeed);
+        IGuardStrategies combatStrategy = new CombatStrategy(transform, transform, new AStar(gridWorld), combatSpeed);
+        IGuardStrategies sleepStrategy = new SleepStrategy();
 
         State arousedState = new ArousedState("Aroused", arousedStrategy);
         State patrolState = new PatrolState("Patrol", patrolStrategy);
@@ -70,7 +70,7 @@ public class EnemyAI : MonoBehaviour
         transitionTable.Add(("Sleep", combatState), sleepState);
         transitionTable.Add(("SleepEnded", sleepState), arousedState);
 
-        stateMachine = new StateMachine(patrolState, transitionTable);
+        stateMachine = new GuardStateMachine(patrolState, transitionTable);
        
     }
 

@@ -9,9 +9,7 @@ using UnityEngine.Tilemaps;
 public class playerMovementScript : MonoBehaviour
 {
     public event Action<Transform, float> onPlayerMoved;
-
-    [SerializeField] private List<Tilemap> groundTilemaps = new List<Tilemap>();
-    private Dictionary<string, float> groundSoundMultipliers = new Dictionary<string, float>();
+    public Animator animator;
 
     private Rigidbody2D rb;
     [SerializeField] private float sneakSpeed = 10.0f;
@@ -19,22 +17,8 @@ public class playerMovementScript : MonoBehaviour
     public InputAction playerControls;
     private Vector2 moveDirection = Vector2.zero;
     private float checkTileTimer = 0.5f;
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        Color c = sr.color;
-        c.a = 0.5f;
-        sr.color = c;
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        Color c = sr.color;
-        c.a = 1.0f;
-        sr.color = c;
-    }
+    private float runSound = 3.0f;
+    private float walkSound = 1.0f;
 
     private void OnEnable()
     {
@@ -49,16 +33,15 @@ public class playerMovementScript : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        groundSoundMultipliers["Grass"] = 0.5f;
-        groundSoundMultipliers["WetDirt"] = 1.5f;
-        groundSoundMultipliers["Wheat"] = 1.2f;
-        groundSoundMultipliers["Bushes"] = 0.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
         moveDirection = playerControls.ReadValue<Vector2>();
+        animator.SetInteger("horizontal_direction", Convert.ToInt32(moveDirection.x));
+        animator.SetInteger("vertical_direction", Convert.ToInt32(moveDirection.y));
+
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -73,45 +56,20 @@ public class playerMovementScript : MonoBehaviour
             checkTileTimer += Time.deltaTime;
             if (checkTileTimer >= 0.5f)
             {
-                Tilemap groundTile = CheckForTile();
-                if (groundSoundMultipliers.ContainsKey(groundTile.tag))
+                if (Input.GetKey(KeyCode.LeftShift))
                 {
-                    if (Input.GetKey(KeyCode.LeftShift))
-                    {
-                        onPlayerMoved?.Invoke(transform, groundSoundMultipliers[groundTile.tag] * 3);
-                        Debug.Log("Invoked player moved");
-                    }
-                    else
-                    {
-                        onPlayerMoved?.Invoke(transform, groundSoundMultipliers[groundTile.tag]);
-                        Debug.Log("Invoked player moved");
+                    onPlayerMoved?.Invoke(transform, runSound);
+                    Debug.Log("Invoked player moved");
+                }
+                else
+                {
+                    onPlayerMoved?.Invoke(transform, walkSound);
+                    Debug.Log("Invoked player moved");
 
-                    }
                 }
                 checkTileTimer = 0.0f;
 
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-
-        }
-    }
-
-    private Tilemap CheckForTile()
-    {
-        foreach (Tilemap tilemap in groundTilemaps)
-        {
-            Vector3Int tilePos = tilemap.WorldToCell(transform.position);
-            TileBase tile = tilemap.GetTile(tilePos);
-
-            if (tile != null)
-            {
-                return tilemap;
-            }
-        }
-
-        return null;
     }
 }

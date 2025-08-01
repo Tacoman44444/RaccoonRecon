@@ -12,18 +12,18 @@ using Transform = UnityEngine.Transform;
 
 namespace AI
 {
-    public interface IStrategy
+    public interface IGuardStrategies
     {
         void Process();
     }
 
-    public class PatrolStrategy : IStrategy
+    public class PatrolStrategy : IGuardStrategies
     {
         readonly Transform entity;
         readonly List<Transform> patrolPoints;
         readonly float patrolSpeed;
         private AStar pathfinder;
-        private List<Node> path;
+        private List<Tile> path;
         private int pathIndex = 0;
         private int currentIndex = 0;
         private float timer = 0.0f;
@@ -34,7 +34,7 @@ namespace AI
             this.patrolPoints = patrolPoints;
             this.patrolSpeed = patrolSpeed;
             this.pathfinder = pathfinder;
-            path = new List<Node>();
+            path = new List<Tile>();
             
             Initialize();
         }
@@ -115,7 +115,7 @@ namespace AI
 
     }
 
-    public class ArousedStrategy : IStrategy
+    public class ArousedStrategy : IGuardStrategies
     {
         public event Action onSearchEnded;
         public event Action onRaccoonSpotted;
@@ -123,7 +123,7 @@ namespace AI
         readonly Transform entity;
         readonly Transform alertCue;
         private AStar pathfinder;
-        private List<Node> path;
+        private List<Tile> path;
         private int pathIndex = 0;
         readonly float searchSpeed = 2.0f;
         [SerializeField] private float arousedTime = 10.0f;
@@ -197,7 +197,7 @@ namespace AI
 
     }
 
-    public class CombatStrategy : IStrategy
+    public class CombatStrategy : IGuardStrategies
     {
         public event Action onCombatEnded;
 
@@ -205,7 +205,7 @@ namespace AI
         private Transform player;
         private AStar pathfinder;
         private EnemyVisionCone visionCone;
-        private List<Node> path;
+        private List<Tile> path;
         private int pathIndex;
         private float attackSpeed;
         private float aStarTimer = 1.0f;
@@ -266,7 +266,7 @@ namespace AI
         }
     }
 
-    public class SleepStrategy : IStrategy
+    public class SleepStrategy : IGuardStrategies
     {
         public event Action onSleepEnded;
         private readonly float sleepTimer = 10.0f;

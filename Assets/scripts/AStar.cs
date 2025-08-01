@@ -14,20 +14,18 @@ namespace AI.Pathfinding
         {
             this.gridWorld = gridWorld;
         }
-        public List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
+        public List<Tile> FindPath(Vector3 startPos, Vector3 targetPos)
         {
-            Node startNode = gridWorld.NodeFromWorldPoint(startPos);
-            Node targetNode = gridWorld.NodeFromWorldPoint(targetPos);
-            gridWorld.TESTplayer = startNode;
-            gridWorld.TESTtarget = targetNode;
+            Tile startNode = gridWorld.NodeFromWorldPoint(startPos);
+            Tile targetNode = gridWorld.NodeFromWorldPoint(targetPos);
 
-            List<Node> openSet = new List<Node>();
-            HashSet<Node> closedSet = new HashSet<Node>();
+            List<Tile> openSet = new List<Tile>();
+            HashSet<Tile> closedSet = new HashSet<Tile>();
             openSet.Add(startNode);
 
             while (openSet.Count > 0)
             {
-                Node currentNode = openSet[0];
+                Tile currentNode = openSet[0];
                 for (int i = 1; i < openSet.Count; i++)
                 {
                     if (openSet[i].FCost < currentNode.FCost || openSet[i].FCost == currentNode.FCost)
@@ -45,7 +43,7 @@ namespace AI.Pathfinding
                     return RetracePath(startNode, targetNode);
                 } 
 
-                foreach (Node neighbour in gridWorld.GetNeighbours(currentNode))
+                foreach (Tile neighbour in gridWorld.GetNeighbours(currentNode))
                 {
                     if (!neighbour.walkable || closedSet.Contains(neighbour))
                         continue;
@@ -70,10 +68,10 @@ namespace AI.Pathfinding
             return null;
         }
 
-        private List<Node> RetracePath(Node startNode, Node endNode)
+        private List<Tile> RetracePath(Tile startNode, Tile endNode)
         {
-            List<Node> path = new List<Node>();
-            Node currentNode = endNode;
+            List<Tile> path = new List<Tile>();
+            Tile currentNode = endNode;
 
             while (currentNode != startNode)
             {
@@ -86,7 +84,7 @@ namespace AI.Pathfinding
             return path;
         }
 
-        private int GetDistance(Node a, Node b)
+        private int GetDistance(Tile a, Tile b)
         {
             int dstX = Mathf.Abs(a.gridX - b.gridX);
             int dstY = Mathf.Abs(a.gridY - b.gridY);
