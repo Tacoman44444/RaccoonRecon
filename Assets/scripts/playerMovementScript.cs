@@ -8,17 +8,24 @@ using UnityEngine.Tilemaps;
 
 public class playerMovementScript : MonoBehaviour
 {
-    public event Action<Transform, float> onPlayerMoved;
     public Animator animator;
 
     private Rigidbody2D rb;
+    [SerializeField] GameObject grogPrefab;
     [SerializeField] private float sneakSpeed = 10.0f;
     [SerializeField] private float runSpeed = 20.0f;
+    [SerializeField] SanityBar sanityBar;
+    [SerializeField] GrogScript grogScript;
+    [SerializeField] private AlertEmitter emitter;
+
     public InputAction playerControls;
     private Vector2 moveDirection = Vector2.zero;
-    private float checkTileTimer = 0.5f;
-    private float runSound = 3.0f;
-    private float walkSound = 1.0f;
+    private float emitSoundInterval = 0.5f;
+    private float emitSoundTimer = 0.0f;
+
+    private float sanityTimer = 0.0f;
+    private float sanityDuration = 10.0f;
+    private bool abilityInUse = false;
 
     private void OnEnable()
     {
@@ -33,6 +40,7 @@ public class playerMovementScript : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sanityBar.SetMaxSanity(sanityDuration);
     }
 
     // Update is called once per frame
@@ -53,23 +61,72 @@ public class playerMovementScript : MonoBehaviour
         }
         if (moveDirection != Vector2.zero)
         {
-            checkTileTimer += Time.deltaTime;
-            if (checkTileTimer >= 0.5f)
+            emitSoundTimer += Time.deltaTime;
+            if (emitSoundTimer >= emitSoundInterval)
             {
-                if (Input.GetKey(KeyCode.LeftShift))
+                if (!abilityInUse)
                 {
-                    onPlayerMoved?.Invoke(transform, runSound);
-                    Debug.Log("Invoked player moved");
-                }
-                else
-                {
-                    onPlayerMoved?.Invoke(transform, walkSound);
-                    Debug.Log("Invoked player moved");
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        emitter.EmitAlert(transform.position, AlertType.FOOTSTEPS_RUN);
+                        SoundManager.PlaySound(SoundType.PLAYER_FOOTSTEPS);
+                        SoundManager.PlaySound(SoundType.PLAYER_FOOTSTEPS);
+                    }
+                    else
+                    {
+                        emitter.EmitAlert(transform.position, AlertType.FOOTSTEPS_WALK);
+                        SoundManager.PlaySound(SoundType.PLAYER_FOOTSTEPS);
 
+                    }
                 }
-                checkTileTimer = 0.0f;
+                emitSoundTimer = 0.0f;
 
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (sanityTimer < sanityDuration)
+            {
+                abilityInUse = !abilityInUse;
+                if (abilityInUse)
+                {
+                    gameObject.layer = LayerMask.NameToLayer("RaccoonInvisible");
+                    emitter.EmitAlert(transform.position, AlertType.USED_ABILITY);
+                    SoundManager.PlaySound(SoundType.ABILITY_USED);
+                }
+                else
+                {
+                    gameObject.layer = LayerMask.NameToLayer("Raccoon");
+                }
+
+            }
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            if (grogScript.RemoveGrogImage())
+            {
+                Instantiate(grogPrefab, transform.position, Quaternion.identity);
+            }
+        }
+
+        if (abilityInUse)
+        {
+            drainSanity();
+        }
+    }
+
+    void drainSanity()
+    {
+        if (sanityTimer >= sanityDuration)
+        {
+            Debug.Log("Sanity finished");
+            abilityInUse = false;
+            return;
+        }
+        sanityTimer += Time.deltaTime;
+        sanityBar.SetSanity(sanityDuration - sanityTimer);
     }
 }

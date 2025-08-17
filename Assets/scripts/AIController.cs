@@ -7,12 +7,15 @@ using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem.Android;
+using UnityEngine.UIElements;
 using static AI.BehaviorTrees.Node;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class AIController
 {
     private Transform agent;
+    private Transform alertIndicator;
+    private Transform combatIndicator;
     List<Transform> patrolPoints;
     private AStar pathfinder;
     private List<Tile> path;
@@ -21,6 +24,7 @@ public class AIController
     private int currentIndex = 0;
 
     private bool reachedAlert;
+    Vector2 lastAlert;
 
     private float searchDuration = 5.0f;
     private float searchTimer = 0.0f;
@@ -30,18 +34,33 @@ public class AIController
     private float seekPlayerInterval = 0.5f;
     private float seekPlayerTimer = 0.0f;
 
-    private float patrolSpeed;
-    private float alertSpeed;
-    private float combatSpeed;
+    public float detectPlayerInterval = 2.0f;
 
-    public AIController(Transform agent, List<Transform> patrolPoints, float patrolSpeed, float alertSpeed, float combatSpeed)
+    private float patrolSpeed = 3.0f;
+    private float alertSpeed = 3.5f;
+    private float combatSpeed = 5.0f;
+
+    private float combatDistance = 10.0f;
+    private float killDistance = 1.0f;
+
+    private float randomWalkTimer = 0.0f;
+    private Vector2 walkDirection = Vector2.zero;
+
+    private Vector3 alertOffset;
+    private Vector3 combatOffset;
+
+    public AIController(Transform agent, List<Transform> patrolPoints, AStar pathfinder, float patrolSpeed, float alertSpeed, float combatSpeed)
     {
         this.agent = agent;
         this.patrolPoints = patrolPoints;
         this.patrolSpeed = patrolSpeed;
+        this.pathfinder = pathfinder;
         this.alertSpeed = alertSpeed;
         this.combatSpeed = combatSpeed;
-
+        alertIndicator = agent.transform.Find("AlertIndicator");
+        combatIndicator = agent.transform.Find("CombatIndicator");
+        alertOffset = alertIndicator.position - agent.transform.position;
+        combatOffset = combatIndicator.position - agent.transform.position;
     }
 
     public Status PatrolAction()
@@ -54,7 +73,7 @@ public class AIController
 
             Vector2 direction = targetPos - new Vector2(agent.transform.position.x, agent.transform.position.y);
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            agent.transform.rotation = Quaternion.Euler(0, 0, angle);
+            RotateSprite(angle);
 
             if (Vector2.Distance(agent.transform.position, targetPos) < 0.1f)
                 pathIndex++;
@@ -64,13 +83,13 @@ public class AIController
             if (currentIndex >= patrolPoints.Count - 1)
             {
                 currentIndex = 0;
-                path = pathfinder.FindPath(patrolPoints[patrolPoints.Count - 1].transform.position, patrolPoints[0].transform.position);
+                path = pathfinder.FindPath(agent.transform.position, patrolPoints[currentIndex].transform.position);
                 pathIndex = 0;
             }
             else
             {
                 currentIndex++;
-                path = pathfinder.FindPath(patrolPoints[currentIndex - 1].transform.position, patrolPoints[currentIndex].transform.position);
+                path = pathfinder.FindPath(agent.transform.position, patrolPoints[currentIndex].transform.position);
                 pathIndex = 0;
             }
 
@@ -80,16 +99,17 @@ public class AIController
 
     public void ResetPatrol()
     {
-        pathIndex = 0;
         currentIndex = 0;
-        path = null;
     }
 
-    public Status AlertAction(Transform alertCue)
+    public Status AlertAction(Vector2 alertCue)
     {
-        if (path == null && !reachedAlert)
+
+        if ((path == null && !reachedAlert) || alertCue != lastAlert)
+
         {
-            path = pathfinder.FindPath(agent.transform.position, alertCue.transform.position);
+            lastAlert = alertCue;
+            path = pathfinder.FindPath(agent.transform.position, alertCue);
             pathIndex = 0;
             return Status.Running;
         }
@@ -101,7 +121,7 @@ public class AIController
 
             Vector2 direction = targetPos - new Vector2(agent.transform.position.x, agent.transform.position.y);
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            agent.transform.rotation = Quaternion.Euler(0, 0, angle);
+            RotateSprite(angle);
 
             if (Vector2.Distance(agent.transform.position, targetPos) < 0.1f)
                 pathIndex++;
@@ -125,8 +145,6 @@ public class AIController
     public void ResetAlert()
     {
         reachedAlert = false;
-        path = null;
-        pathIndex = 0; 
     }
 
     public Node.Status SearchAction()
@@ -144,7 +162,7 @@ public class AIController
 
                 Vector2 direction = MyMathUtils.GetRandomDirection();
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                agent.transform.rotation = Quaternion.Euler(0, 0, angle);
+                RotateSprite(angle);
             }
             return Status.Running;
         }
@@ -158,6 +176,19 @@ public class AIController
 
     public Node.Status CombatAction(Transform player)
     {
+        
+        float dist = Vector2.Distance(player.transform.position, agent.transform.position);
+
+        if (dist > combatDistance)
+        {
+            return Status.Failure;
+        }
+
+        if (dist < killDistance)
+        {
+            return Status.Success;
+        }
+
         if (seekPlayerTimer > seekPlayerInterval)
         {
             path = pathfinder.FindPath(agent.transform.position, player.transform.position);
@@ -174,11 +205,12 @@ public class AIController
 
                 Vector2 direction = targetPos - new Vector2(agent.transform.position.x, agent.transform.position.y);
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                agent.transform.rotation = Quaternion.Euler(0, 0, angle);
+                RotateSprite(angle);
 
                 if (Vector2.Distance(agent.transform.position, targetPos) < 0.1f)
                     pathIndex++;
             }
+            seekPlayerTimer += Time.deltaTime;
         }
         return Status.Running;
     }
@@ -186,9 +218,42 @@ public class AIController
     public void ResetCombat()
     {
         seekPlayerTimer = 0.0f;
-        path = null;
-        pathIndex = 0;
 
+    }
+
+    public Node.Status RandomWalk(float speed, float interval)
+    {
+        if (randomWalkTimer > interval)
+        {
+            randomWalkTimer = 0.0f;
+            walkDirection = new Vector2(Random.value, Random.value).normalized;
+
+        }
+        float angle = Mathf.Atan2(walkDirection.y, walkDirection.x) * Mathf.Rad2Deg;
+        RotateSprite(angle);
+        agent.transform.position = Vector2.MoveTowards(agent.transform.position, agent.transform.position + new Vector3(walkDirection.x, walkDirection.y, 0.0f), speed * Time.deltaTime);
+        randomWalkTimer += Time.deltaTime;
+        return Status.Running;
+    }
+
+    public void ResetRandomWalk()
+    {
+        randomWalkTimer = 0.0f;
+        walkDirection = Vector2.zero;
+    }
+
+    private void RotateSprite(float angle)
+    {
+        // Rotate the agent
+        agent.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Restore indicators' world position so they don't orbit
+        alertIndicator.position = agent.transform.position + alertOffset;
+        combatIndicator.position = agent.transform.position + combatOffset;
+
+        // Keep indicators upright (no rotation)
+        alertIndicator.rotation = Quaternion.identity;
+        combatIndicator.rotation = Quaternion.identity;
     }
 
 }

@@ -1,4 +1,4 @@
-using AI.FiniteStateMachine;
+/*using AI.FiniteStateMachine;
 using AI;
 using System.Collections;
 using System.Collections.Generic;
@@ -152,3 +152,4 @@ public class EnemyAI : MonoBehaviour
     }
 
 }
+*/

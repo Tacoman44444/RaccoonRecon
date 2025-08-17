@@ -1,4 +1,5 @@
 using AI.Pathfinding;
+using BlackboardSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,7 +52,8 @@ namespace AI.BehaviorTrees
 
         public Node.Status Process()
         {
-            return controller.PatrolAction();
+            Node.Status status = controller.PatrolAction();
+            return status;
         }
 
         public void Reset()
@@ -63,27 +65,44 @@ namespace AI.BehaviorTrees
     public class AlertCommand : ICommand
     {
         AIController controller;
-        Transform alertCue;
-        public AlertCommand(AIController controller, Transform alertCue)
+        Blackboard blackboard;
+        BlackboardKey cueKey;
+        BlackboardKey detected;
+        public AlertCommand(AIController controller, Blackboard blackboard)
         {
             this.controller = controller;
-            this.alertCue = alertCue;
+            this.blackboard = blackboard;
+            cueKey = blackboard.GetOrRegisterKey("AlertCueKey");
+            detected = blackboard.GetOrRegisterKey("IsDetected");
         }
 
         public Node.Status Process()
         {
-            return controller.AlertAction(alertCue);
+            if (blackboard.TryGetValue<bool>(detected, out bool val))
+            {
+                return Node.Status.Failure;
+            }
+            if (blackboard.TryGetValue<Vector2>(cueKey, out Vector2 cue))
+            {
+                Node.Status alertStatus = controller.AlertAction(cue);
+                return alertStatus;
+            }
+            Debug.Log("ERROR::AlertCommand Failed, could not get value from blackboard");
+            return Node.Status.Failure;
         }
 
         public void Reset()
         {
             controller.ResetAlert();
+            BlackboardKey servedKey = blackboard.GetOrRegisterKey("AlertServed");
+            blackboard.SetValue(servedKey, true);
         }
     }
 
     public class SearchCommand : ICommand
     {
         AIController controller;
+        Blackboard blackboard;
         public SearchCommand(AIController controller)
         {
             this.controller = controller;
@@ -101,13 +120,47 @@ namespace AI.BehaviorTrees
 
     }
 
+    public class DetectPlayerCommandOrc : ICommand
+    {
+        private AIController controller;
+        private Func<bool> condition;
+        private float detectTimer;
+        public DetectPlayerCommandOrc(AIController controller, Func<bool> condition)
+        {
+            this.controller = controller;
+            this.condition = condition;
+        }
+
+        public Node.Status Process()
+        {
+            detectTimer += Time.deltaTime;
+            if (detectTimer > controller.detectPlayerInterval)
+            {
+                return Node.Status.Success;
+            }
+
+            if (!condition())
+            {
+                return Node.Status.Failure;
+            }
+
+            return Node.Status.Running;
+        }
+
+        public void Reset()
+        {
+            detectTimer = 0.0f;
+        }
+    }
+
     public class CombatCommand : ICommand
     {
         AIController controller;
         Transform player;
-        public CombatCommand(AIController controller)
+        public CombatCommand(AIController controller, Transform player)
         {
             this.controller = controller;
+            this.player = player;
         }
 
         public Node.Status Process()
@@ -121,4 +174,32 @@ namespace AI.BehaviorTrees
         }
     }
 
+    public class DrunkCommand : ICommand
+    {
+        AIController controller;
+        float drunkTimer = 0.0f;
+        float drunkDuration;
+
+        public DrunkCommand(AIController controller, float drunkDuration)
+        {
+            this.controller = controller;
+            this.drunkDuration = drunkDuration;
+        }
+
+        public Node.Status Process()
+        {
+            if (drunkTimer > drunkDuration)
+            {
+                return Node.Status.Success;
+            }
+            drunkTimer += Time.deltaTime;
+            return controller.RandomWalk(0.0f, 2.0f);
+        }
+
+        public void Reset()
+        {
+            controller.ResetRandomWalk();
+            drunkTimer = 0.0f;
+        }
+    }
 }
